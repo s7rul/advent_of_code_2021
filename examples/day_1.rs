@@ -3,40 +3,55 @@ use advent_of_code_2022::*;
 fn main() {
     let input = read_input_to_vec("input/day1.txt");
 
+    let mut sum: u32 = 0;
+    let mut last: u32 = 0;
 
-    let mut tmp: u32 = 0;
+    let mut flag: bool = false;
 
-    let mut max1: u32 = 0;
-    let mut max2: u32 = 0;
-    let mut max3: u32 = 0;
+    let mut window: [u32; 3] = [0; 3];
+    let mut start: u32 = 0;
+
     for l in input {
         if l == "" {
-            if tmp >= max1 {
-                max3 = max2;
-                max2 = max1;
-                max1 = tmp;
-            } else if tmp >= max2 {
-                max3 = max2;
-                max2 = tmp;
-            } else if tmp > max3 {
-                max3 = tmp;
+        } else if flag {
+            let current = l.parse::<u32>().unwrap();
+
+            window[0] = window[1];
+            window[1] = window[2];
+            window[2] = current;
+
+            let mut win_sum = 0;
+            for n in window {
+                win_sum += n;
             }
-            tmp = 0;
+
+            if last < win_sum {
+                println!("increase");
+                sum += 1;
+            } else {
+                println!("no increase");
+            }
+            last = win_sum;
+
+
         } else {
-            tmp += l.parse::<u32>().unwrap();
+            let current = l.parse::<u32>().unwrap();
+            window[start as usize] = current;
+
+            let mut win_sum = 0;
+            for n in window {
+                win_sum += n;
+            }
+
+            start += 1;
+            println!("setup");
+            if start == 3 {
+                last = win_sum;
+
+                flag = true;
+            }
         }
     }
-    if tmp > max1 {
-        max3 = max2;
-        max2 = max1;
-        max1 = tmp;
-    } else if tmp > max2 {
-        max3 = max2;
-        max2 = tmp;
-    } else if tmp > max3 {
-        max3 = tmp;
-    }
 
-
-    println!("Max: {}", max1 + max2 + max3);
+    println!("{}", sum);
 }
